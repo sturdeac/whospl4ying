@@ -1,0 +1,12 @@
+body {
+    background: #DDDDDD;
+}
+
+.navbar {
+    background-color: #008020;
+    color: white;
+}
+
+.page-container {
+    margin-top: 80px;
+}
