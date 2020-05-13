@@ -10,3 +10,18 @@ body {
 .page-container {
     margin-top: 80px;
 }
+
+.login-logo {
+    font-size: 200px;
+    color: #008020;
+}
+
+.screen-shot {
+    width: 100%;
+    height: auto;
+}
+
+.modal-inner-scroll {
+    max-height: 70vh;
+    overflow-y: scroll;
+}

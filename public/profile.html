@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="styles/bootstrap.min.css">
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.7/css/all.css">
+  <title>Who's Playing</title>
+</head>
+
+<body>
+  <nav class="navbar navbar-dark fixed-top">
+    <a class="navbar-brand" href="/home.html">Who's Playing</a>
+    <div class="btn-group">
+      <span data-toggle="dropdown">
+        <i class="fas fa-bars"></i>
+      </span>
+      <div class="dropdown-menu dropdown-menu-right">
+        <a href="/home.html" class="dropdown-item">Home</a>
+        <a href="/profile.html" class="dropdown-item">Edit Profile</a>
+        <button id="menuSignOut" class="dropdown-item" type="button">Sign out</button>
+      </div>
+    </div>
+  </nav>
+
+  <div id="profile-page" class="container page-container">
+    <div class="row">
+      <div class="col-md-8 mx-auto">
+        <div class="card mb-8 shadow-sm">
+          <img class="screen-shot" src="https://media.rawg.io/media/games/7e3/7e327a055bedb9b6d1be86593bef473d.jpg">
+          <div class="card-body">
+            <h5 class="card-title">Call of Duty Warzone</h5>
+            <p class="card-text m-0">Cole Sturdevant</p>
+            <p class="card-text m-0"><i class="fab fa-playstation"></i> ContrastKiller</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-3 justify-content-center">
+      <div class="col-md-4 text-center">
+        <button id="change-game" class="btn btn-success w-100" data-toggle="modal" data-target="#exampleModal">Change Game</button>
+      </div>
+      <div class="col-md-4 text-center">
+        <button id="change-game" class="btn btn-danger w-100">Go Offline</button>
+      </div>
+    </div>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body modal-inner-scroll">
+            ...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    
+  </div>
+
+  <script src="scripts/jquery.min.js"></script>
+  <script src="scripts/bootstrap.min.js"></script>
+  <script src="/__/firebase/7.14.2/firebase-app.js"></script>
+  <script src="/__/firebase/7.14.2/firebase-firestore.js"></script>
+  <script src="/__/firebase/7.14.2/firebase-auth.js"></script>
+  <script src="/__/firebase/init.js"></script>
+  <script src="scripts/main.js"></script>
+</body>
+
+</html>
