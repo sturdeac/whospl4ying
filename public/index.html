@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="styles/bootstrap.min.css">
   <link rel="stylesheet" href="styles/main.css">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.7/css/all.css">
+  <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
   <title>Who's Playing</title>
 </head>
 
@@ -20,9 +21,7 @@
       <div class="col col-12 text-center">
         <i class="fas fa-gamepad login-logo"></i>
       </div>
-      <div class="col col-12 text-center">
-        <button id="rosefireBtn" class="btn btn-dark" type="button">Sign in</button>
-      </div>
+      <div id="firebaseui-auth-container" class="mx-auto"></div>
     </div>
   </div>
 
@@ -31,6 +30,7 @@
   <script src="/__/firebase/7.14.2/firebase-app.js"></script>
   <script src="/__/firebase/7.14.2/firebase-firestore.js"></script>
   <script src="/__/firebase/7.14.2/firebase-auth.js"></script>
+  <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
   <script src="/__/firebase/init.js"></script>
   <script src="scripts/main.js"></script>
 </body>
