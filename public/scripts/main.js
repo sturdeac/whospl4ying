@@ -156,13 +156,177 @@ wp.HomePageController = class {
           <div class="card-body">
             <h5 class="card-title">${user.game_title}</h5>
             <p class="card-text m-0">${user.name}</p>
-            <p class="card-text m-0"><i class="fab fa-${platformIcon}"></i>${user.gamer_tag}</p>
+            <p class="card-text m-0"><i class="fab fa-${platformIcon}"></i> ${user.gamer_tag}</p>
           </div>
         </div>
       </div>
     `)
 
     return $newcard;
+  }
+}
+
+//-----------------------profile page-----------------------------------------------------
+wp.FbSingleUserManager = class {
+  constructor() {
+    this._uid = wp.fbAuthManager.uid;
+    this._ref = firebase
+      .firestore()
+      .collection(wp.COLLECTION_USERS)
+      .doc(this._uid);
+    this._document = {};
+    this._unsubscribe = null;
+  }
+
+  beginListening(changeListener) {
+    this._unsubscribe = this._ref.onSnapshot(doc => {
+      if (doc.exists) {
+        this._document = doc;
+        console.log("doc.data() :", doc.data());
+        if (changeListener) {
+          changeListener();
+        }
+      }
+    });
+  }
+
+  stopListening() {
+    this._unsubscribe();
+  }
+
+  updateUserInfo(name){
+    this._ref
+      .update({
+        [wp.USER_NAME]: name
+      });
+  }
+
+  updateOnlineInfo(isOnline){
+    this._ref
+      .update({
+        [wp.USER_ONLINE]: !isOnline
+      });
+  }
+
+  get name(){
+    return this._document.get(wp.USER_NAME);
+  }
+  get isOnline(){
+    return this._document.get(wp.USER_ONLINE);
+  }
+  get gameTitle(){
+    return this._document.get(wp.USER_GAME_TITLE);
+  }
+  get gameScreenshot(){
+    return this._document.get(wp.USER_GAME_SCREENSHOT);
+  }
+  get gamePlatform(){
+    return this._document.get(wp.USER_GAME_PLATFORM);
+  }
+  get gamerTag(){
+    return this._document.get(wp.USER_GAMER_TAG);
+  }
+  get friends(){
+    return this._document.get(wp.USER_FRIENDS);
+  }
+  get friendRequests(){
+    return this._document.get(wp.USER_FRIEND_REQUESTS);
+  }
+}
+
+
+wp.ProfilePageController = class {
+  constructor() {
+    wp.fbSingleUserManager.beginListening(this.updateView.bind(this));
+
+    $("#menuSignOut").click(() => {
+      wp.fbAuthManager.signOut();
+    });
+
+    $("#changeOnline").click(() => {
+      wp.fbSingleUserManager.updateOnlineInfo(wp.fbSingleUserManager.isOnline)
+    });
+
+    $("#editProfileModal").on("show.bs.modal", function (e) {
+      $("#inputName").trigger("focus");
+      $("#inputName").val(wp.fbSingleUserManager.name);
+    });
+    $("#editProfileModal").on("shown.bs.modal", function (e) {
+      $("#inputName").trigger("focus");
+    });
+    $("#SubmitEditProfile").click((e) => {
+      const name = $("#inputName").val();
+      wp.fbSingleUserManager.updateUserInfo(name);
+    });
+
+    $("#searchGame").change(() => {
+      $.ajax({
+        url: `https://api.rawg.io/api/games?search=${$("#searchGame").val()}`,
+        type: "GET",
+        success: function(res){
+          $("#resRow")
+            .removeAttr("id")
+            .hide();
+          let $newList = $(`<div></div>`)
+            .attr("id","resRow")
+            .addClass("row");
+          for(let i = 0; i < res.results.length; i++){
+            let game = res.results[i];
+            const $gameCard = $(`
+            <div class="col-md-12">
+              <div class="row p-3 bg-light mb-2">
+                <div class="col-md-2">
+                  <img class="screen-shot" src="${game.background_image}">
+                </div>
+                <div class="col-md-10 my-auto">
+                  <h5>${game.name}</h5>
+                </div>
+              </div>
+            </div>
+          `);
+          
+          $gameCard.click(() => {
+            $gameCard.css({"border-color": "#C1E0FF", 
+              "border-width":"1px", 
+              "border-style":"solid"});
+          })
+
+            $newList.append($gameCard);
+          }
+          $("#searchResults").append($newList);
+        },
+        error: function(er){
+          console.log(er)
+        }
+      });
+    });
+
+  }
+
+  updateView(){
+    const gameScreenshot = wp.fbSingleUserManager.gameScreenshot;
+    const gameTitle = wp.fbSingleUserManager.gameTitle;
+    const userName = wp.fbSingleUserManager.name;
+    const gamerTag = wp.fbSingleUserManager.gamerTag;
+    const isOnline = wp.fbSingleUserManager.isOnline;
+
+    if(isOnline){
+      $("#changeOnline").html("Go Offline");
+      $("#changeOnline").removeClass("btn-success");
+      $("#changeOnline").addClass("btn-danger");
+      $("#profileOnlineDot").removeClass("profile-offline");
+      $("#profileOnlineDot").addClass("profile-online");
+    }else{
+      $("#changeOnline").html("Go Online");
+      $("#changeOnline").removeClass("btn-danger");
+      $("#changeOnline").addClass("btn-success");
+      $("#profileOnlineDot").removeClass("profile-online");
+      $("#profileOnlineDot").addClass("profile-offline");
+    }
+    $("#profileScreenShot").attr("src",gameScreenshot);
+    $("#profileGameTitle").html(gameTitle)
+    $("#profileUserName").html(userName)
+    $("#profileGamerTag").html(gamerTag)
   }
 }
 
@@ -223,6 +387,8 @@ wp.initializePage = function () {
     console.log("On login page");
     wp.startFirebaseUi();
   } else if ($("#profile-page").length) {
+    wp.fbSingleUserManager = new wp.FbSingleUserManager();
+    new wp.ProfilePageController();
     console.log("On login page");
   }
 }

@@ -22,6 +22,37 @@ body {
 }
 
 .modal-inner-scroll {
-    max-height: 70vh;
+    max-height: 30vh;
     overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+#profileOnlineDot {
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.profile-online {
+    background-color: green;
+}
+
+.profile-offline {
+    background-color: red;
+}
+
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0,0,0,.5);
+    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
+
+.as-align-middle {
+    align-items: center;
 }

@@ -19,7 +19,8 @@
       </span>
       <div class="dropdown-menu dropdown-menu-right">
         <a href="/home.html" class="dropdown-item">Home</a>
-        <a href="/profile.html" class="dropdown-item">Edit Profile</a>
+        <button id="menuEditProfile" class="dropdown-item" data-toggle="modal" data-target="#editProfileModal"
+          type="button">Edit Profile</button>
         <button id="menuSignOut" class="dropdown-item" type="button">Sign out</button>
       </div>
     </div>
@@ -31,21 +32,22 @@
         <div class="row mb-3">
           <div class="col-md-12">
             <div class="card mb-12 shadow-sm">
-              <img class="screen-shot" src="https://media.rawg.io/media/games/7e3/7e327a055bedb9b6d1be86593bef473d.jpg">
+              <img id="profileScreenShot" class="screen-shot" src="">
               <div class="card-body">
-                <h5 class="card-title">Call of Duty Warzone</h5>
-                <p class="card-text m-0">Cole Sturdevant</p>
-                <p class="card-text m-0"><i class="fab fa-playstation"></i> ContrastKiller</p>
+                <h5 id="profileGameTitle" class="card-title"></h5>
+                <p class="card-text m-0"><span id="profileUserName"></span> <span id="profileOnlineDot"></span></p>
+                <p class="card-text m-0"><i class="fa fa-gamepad"></i> <span id="profileGamerTag"></span></p>
               </div>
             </div>
           </div>
         </div>
         <div class="row">
           <div class="col-md-6 text-center mb-3">
-            <button id="change-game" class="btn btn-success w-100" data-toggle="modal" data-target="#exampleModal">Change Game</button>
+            <button id="changeGame" class="btn btn-primary w-100" data-toggle="modal"
+              data-target="#changeGameModal">Change Game</button>
           </div>
           <div class="col-md-6 text-center mb-3">
-            <button id="change-game" class="btn btn-danger w-100">Go Offline</button>
+            <button id="changeOnline" class="btn btn-danger w-100">Go Offline</button>
           </div>
         </div>
       </div>
@@ -58,17 +60,41 @@
       </div>
     </div>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="changeGameModal" tabindex="-1" role="dialog" aria-labelledby="changeGameModalLabel"
+      aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <h5 class="modal-title" id="changeGameModalLabel">Change Game</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body modal-inner-scroll">
-            ...
+          <div class="modal-body">
+            <div class="form-group row">
+              <label for="searchGame" class="col-sm-2 mt-sm-2 control-label">Find Game:</label>
+              <div class="col-sm-12">
+                <input type="text" id="searchGame" class="form-control" placeholder="Game Name" />
+              </div>
+            </div>
+            <div id="searchResults" class="modal-inner-scroll">
+              <div id="resRow" class="row"></div>
+            </div>
+            <div class="form-group row">
+              <label for="inputGamerTag" class="col-sm-2 mt-sm-2 control-label">Gamer Tag:</label>
+              <div class="col-sm-12">
+                <input type="text" id="inputGamerTag" class="form-control" placeholder="Your Game Tag" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="sel1">Select list:</label>
+              <select class="form-control" id="sel1">
+                <option>Playstation</option>
+                <option>Xbox</option>
+                <option>PC</option>
+                <option>Other</option>
+              </select>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -76,7 +102,38 @@
           </div>
         </div>
       </div>
-    
+    </div>
+
+    <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group row">
+                  <label for="inputName" class="col-sm-2 mt-sm-2 control-label">Name:</label>
+                  <div class="col-sm-10">
+                    <input type="text" id="inputName" class="form-control" placeholder="Your Name" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button id="SubmitEditProfile" type="button" class="btn btn-primary" data-dismiss="modal">Save
+              changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="scripts/jquery.min.js"></script>
