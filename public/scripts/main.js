@@ -135,13 +135,13 @@ wp.HomePageController = class {
   createGameCard(user){
     let platformIcon = ""
     switch(user.game_platform){
-      case 'playstation': 
+      case 'Playstation': 
         platformIcon = "playstation";
         break;
-      case 'xbox':
+      case 'Xbox':
         platformIcon = "xbox";
         break;
-      case 'pc':
+      case 'PC':
         platformIcon = "desktop"
         break;
       default:
@@ -201,10 +201,42 @@ wp.FbSingleUserManager = class {
       });
   }
 
+  updateGameInfo(gamerTag, platform, gameTitle, gameScreenshot){
+    this._ref
+      .update({
+        [wp.USER_GAMER_TAG]: gamerTag,
+        [wp.USER_GAME_PLATFORM]: platform,
+        [wp.USER_GAME_TITLE]: gameTitle,
+        [wp.USER_GAME_SCREENSHOT]: gameScreenshot,
+        [wp.USER_ONLINE]: true
+      });
+  }
+
   updateOnlineInfo(isOnline){
     this._ref
       .update({
         [wp.USER_ONLINE]: !isOnline
+      });
+  }
+
+  updateFriendsInfo(uid){
+    this._ref
+      .update({
+        [wp.USER_FRIENDS]: firebase.firestore.FieldValue.arrayUnion(uid)
+      });
+  }
+
+  deleteFriendsRequest(uid){
+    this._ref
+      .update({
+        [wp.USER_FRIEND_REQUESTS]: firebase.firestore.FieldValue.arrayRemove(uid)
+      });
+  }
+
+  deleteFriend(uid){
+    this._ref
+      .update({
+        [wp.USER_FRIENDS]: firebase.firestore.FieldValue.arrayRemove(uid)
       });
   }
 
@@ -259,6 +291,21 @@ wp.ProfilePageController = class {
       wp.fbSingleUserManager.updateUserInfo(name);
     });
 
+    $("#changeGameModal").on("show.bs.modal", function (e) {
+      $("#inputGamerTag").trigger("focus");
+      $("#inputGamerTag").val(wp.fbSingleUserManager.gamerTag);
+    });
+    $("#changeGameModal").on("shown.bs.modal", function (e) {
+      $("#inputName").trigger("focus");
+    });
+    $("#submitSelectGame").click((e) => {
+      const gamerTag = $("#inputGamerTag").val();
+      const platform = $("#inputPlatform").val();
+      const gameTitle = $("#inputGameTitle").val();
+      const gameScreenshot = $("#inputGameScreenshot").val();
+      wp.fbSingleUserManager.updateGameInfo(gamerTag, platform, gameTitle, gameScreenshot);
+    });
+
     $("#searchGame").change(() => {
       $.ajax({
         url: `https://api.rawg.io/api/games?search=${$("#searchGame").val()}`,
@@ -286,9 +333,8 @@ wp.ProfilePageController = class {
           `);
           
           $gameCard.click(() => {
-            $gameCard.css({"border-color": "#C1E0FF", 
-              "border-width":"1px", 
-              "border-style":"solid"});
+            $("#inputGameTitle").val(game.name)
+            $("#inputGameScreenshot").val(game.background_image)
           })
 
             $newList.append($gameCard);
@@ -309,6 +355,8 @@ wp.ProfilePageController = class {
     const userName = wp.fbSingleUserManager.name;
     const gamerTag = wp.fbSingleUserManager.gamerTag;
     const isOnline = wp.fbSingleUserManager.isOnline;
+    const friendRequests = wp.fbSingleUserManager.friendRequests;
+    const friends = wp.fbSingleUserManager.friends;
 
     if(isOnline){
       $("#changeOnline").html("Go Offline");
@@ -327,6 +375,86 @@ wp.ProfilePageController = class {
     $("#profileGameTitle").html(gameTitle)
     $("#profileUserName").html(userName)
     $("#profileGamerTag").html(gamerTag)
+
+    $("#friendRequestList")
+      .removeAttr("id")
+      .hide();
+    let $newFRList = $(`<div></div>`)
+      .attr("id","friendRequestList")
+      .addClass("col-12");
+
+    $("#friendsList")
+      .removeAttr("id")
+      .hide();
+    let $newFList = $(`<div></div>`)
+      .attr("id","friendsList")
+      .addClass("col-12");
+
+    for(let k = 0; k < friendRequests.length; k++){
+      wp.fbUsersManger._ref.doc(friendRequests[k]).get().then((docref) =>{
+        console.log(docref.data())
+        const $newCard = this.createFriendRequestCard(docref.data(), friendRequests[k])
+
+        $newFRList.append($newCard);
+      });
+    }
+    $("#friendRequestContainer").append($newFRList);
+
+    for(let k = 0; k < friends.length; k++){
+      wp.fbUsersManger._ref.doc(friends[k]).get().then((docref) =>{
+        console.log(docref.data())
+        const $newCard = this.createFriendCard(docref.data(), friends[k])
+
+        $newFList.append($newCard);
+      });
+    }
+    $("#friendsContainer").append($newFList);
+  }
+
+  createFriendRequestCard(user, uid){
+    const $newCard = $(`
+      <div class="row">
+        <div class="col-8">
+          <h5>${user.name}</h5>
+        </div>
+        <div class="col-2">
+          <i id="accept-request" class="fas fa-plus accept-friend"></i>
+        </div>
+        <div class="col-2">
+          <i id="deny-request" class="fas fa-trash deny-friend"></i>
+        </div>
+      </div>
+    `);
+
+    $newCard.find("#accept-request").click(() => {
+      wp.fbSingleUserManager.updateFriendsInfo(uid);
+      wp.fbSingleUserManager.deleteFriendsRequest(uid);
+    });
+
+    $newCard.find("#deny-request").click(() => {
+      wp.fbSingleUserManager.deleteFriend(uid);
+    });
+
+    return $newCard;
+  }
+
+  createFriendCard(user, uid){
+    const $newCard = $(`
+      <div class="row">
+        <div class="col-10">
+          <h5>${user.name}</h5>
+        </div>
+        <div class="col-2">
+          <i id="delete-friend" class="fas fa-trash deny-friend"></i>
+        </div>
+      </div>
+    `);
+
+    $newCard.find("#delete-friend").click(() => {
+      wp.fbSingleUserManager.deleteFriend(uid)
+    });
+
+    return $newCard;
   }
 }
 
@@ -388,6 +516,7 @@ wp.initializePage = function () {
     wp.startFirebaseUi();
   } else if ($("#profile-page").length) {
     wp.fbSingleUserManager = new wp.FbSingleUserManager();
+    wp.fbUsersManger = new wp.FbUsersManager();
     new wp.ProfilePageController();
     console.log("On login page");
   }

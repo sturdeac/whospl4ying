@@ -22,7 +22,7 @@ body {
 }
 
 .modal-inner-scroll {
-    max-height: 30vh;
+    max-height: 50vh;
     overflow-y: scroll;
     overflow-x: hidden;
 }
@@ -55,4 +55,12 @@ body {
 
 .as-align-middle {
     align-items: center;
+}
+
+.accept-friend {
+    color: #008020;
+}
+
+.deny-friend {
+    color: #880000;
 }

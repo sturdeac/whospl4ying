@@ -19,8 +19,7 @@
       </span>
       <div class="dropdown-menu dropdown-menu-right">
         <a href="/home.html" class="dropdown-item">Home</a>
-        <button id="menuEditProfile" class="dropdown-item" data-toggle="modal" data-target="#editProfileModal"
-          type="button">Edit Profile</button>
+        <button id="menuEditProfile" class="dropdown-item" data-toggle="modal" data-target="#editProfileModal" type="button">Edit Profile</button>
         <button id="menuSignOut" class="dropdown-item" type="button">Sign out</button>
       </div>
     </div>
@@ -54,7 +53,14 @@
       <div class="col-md-4 col-sm-12">
         <div class="row bg-white shadow-sm h-100">
           <div class="col-md-12 friends-title">
+            <h3>Friend Requests</h3>
+            <div id="friendRequestContainer" class="row">
+              <div id="friendRequestList" class="col-12"></div>
+            </div>
             <h3>Friends</h3>
+            <div id="friendsContainer" class="row">
+              <div id="friendsList" class="col-12"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -71,34 +77,55 @@
             </button>
           </div>
           <div class="modal-body">
-            <div class="form-group row">
-              <label for="searchGame" class="col-sm-2 mt-sm-2 control-label">Find Game:</label>
-              <div class="col-sm-12">
-                <input type="text" id="searchGame" class="form-control" placeholder="Game Name" />
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group row">
+                  <label for="searchGame" class="col-sm-12 mt-sm-2 control-label">Find Game:</label>
+                  <div class="col-sm-12">
+                    <input type="text" id="searchGame" class="form-control" placeholder="Game Name" />
+                  </div>
+                </div>
+                <div id="searchResults" class="modal-inner-scroll">
+                  <div id="resRow" class="row"></div>
+                </div>
               </div>
-            </div>
-            <div id="searchResults" class="modal-inner-scroll">
-              <div id="resRow" class="row"></div>
-            </div>
-            <div class="form-group row">
-              <label for="inputGamerTag" class="col-sm-2 mt-sm-2 control-label">Gamer Tag:</label>
-              <div class="col-sm-12">
-                <input type="text" id="inputGamerTag" class="form-control" placeholder="Your Game Tag" />
+              <div class="col-md-6">
+                <div class="form-group row">
+                  <label for="inputGameTitle" class="col-sm-12 mt-sm-2 control-label">Game Title:</label>
+                  <div class="col-sm-12">
+                    <input type="text" id="inputGameTitle" class="form-control" disabled
+                      placeholder="Your Game Title" />
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="inputGameScreenshot" class="col-sm-12 mt-sm-2 control-label">Game Screenshot:</label>
+                  <div class="col-sm-12">
+                    <input type="text" id="inputGameScreenshot" class="form-control" disabled
+                      placeholder="Your Game Screenshot" />
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="inputGamerTag" class="col-sm-12 mt-sm-2 control-label">Gamer Tag:</label>
+                  <div class="col-sm-12">
+                    <input type="text" id="inputGamerTag" class="form-control" placeholder="Your Game Tag" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputPlatform">Select list:</label>
+                  <select class="form-control" id="inputPlatform">
+                    <option>Playstation</option>
+                    <option>Xbox</option>
+                    <option>PC</option>
+                    <option>Other</option>
+                  </select>
+                </div>
               </div>
-            </div>
-            <div class="form-group">
-              <label for="sel1">Select list:</label>
-              <select class="form-control" id="sel1">
-                <option>Playstation</option>
-                <option>Xbox</option>
-                <option>PC</option>
-                <option>Other</option>
-              </select>
             </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
+            <button id="submitSelectGame" type="button" class="btn btn-primary" data-dismiss="modal">Save
+              changes</button>
           </div>
         </div>
       </div>
