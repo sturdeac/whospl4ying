@@ -20,7 +20,8 @@ wp.USER_FRIEND_REQUESTS = "friend_requests";
 wp.USER_GAMER_TAG = "gamer_tag"
 
 wp.User = class {
-  constructor(name, is_online, game_title, game_screenshot, game_platform, friends, friend_requests, gamer_tag) {
+  constructor(id, name, is_online, game_title, game_screenshot, game_platform, friends, friend_requests, gamer_tag) {
+    this.id = id
     this.name = name;
     this.is_online = is_online;
     this.game_title = game_title;
@@ -43,7 +44,6 @@ wp.FbUsersManager = class {
   }
 
   beginListening(changeListener) {
-    console.log("Listening for movie quotes");
     this._ref.doc(this._uid).get().then((docref) => {
       if(!docref.exists){
         this.add()
@@ -93,6 +93,7 @@ wp.FbUsersManager = class {
 
   getUserAtIndex(i){
     return new wp.User(
+      this._documentSnapshots[i].id,
       this._documentSnapshots[i].get(wp.USER_NAME),
       this._documentSnapshots[i].get(wp.USER_ONLINE),
       this._documentSnapshots[i].get(wp.USER_GAME_TITLE),
@@ -109,9 +110,42 @@ wp.FbUsersManager = class {
 wp.HomePageController = class {
   constructor() {
     wp.fbUsersManger.beginListening(this.updateView.bind(this));
+    wp.fbSingleUserManager.beginListening(this.updateView.bind(this));
+
+    $("#addFriendModal").on("show.bs.modal", function (e) {
+      $("#inputSearchName").trigger("focus");
+    });
+    $("#addFriendModal").on("shown.bs.modal", function (e) {
+      $("#inputSearchName").trigger("focus");
+    });
 
     $("#menuSignOut").click(() => {
       wp.fbAuthManager.signOut();
+    });
+
+    $("#inputSearchName").change(() => {
+
+      $("#usersList")
+        .removeAttr("id")
+        .hide();
+      let $newUserList = $(`<div></div>`)
+        .attr("id","usersList")
+        .addClass("col-12");
+
+      wp.fbUsersManger._ref
+        .where(wp.USER_NAME, "==", $("#inputSearchName").val())
+        .get()
+        .then((ref)=>{
+          for(let k = 0; k < ref.docs.length; k++){
+            let uid = ref.docs[k].id;
+            let user = ref.docs[k].data();
+            let $newUserCard = this.createUserCard(user, uid);
+            $newUserList.append($newUserCard);
+          }
+        });
+
+      $("#usersContainer").append($newUserList)
+
     });
   }
 
@@ -123,12 +157,14 @@ wp.HomePageController = class {
       .attr("id","online-list")
       .addClass("row");
 
-    console.log(wp.fbUsersManger.length)
-
+    const friends = wp.fbSingleUserManager.friends;
     for(let k = 0; k < wp.fbUsersManger.length; k++){
-      const $newcard = this.createGameCard(wp.fbUsersManger.getUserAtIndex(k));
-      $newList.append($newcard);
-      $('#home-page').append($newList);
+      const user = wp.fbUsersManger.getUserAtIndex(k);
+      if(friends.includes(user.id)){
+        const $newcard = this.createGameCard(user);
+        $newList.append($newcard);
+        $('#home-page').append($newList);
+      }
     }
   }
 
@@ -156,7 +192,7 @@ wp.HomePageController = class {
           <div class="card-body">
             <h5 class="card-title">${user.game_title}</h5>
             <p class="card-text m-0">${user.name}</p>
-            <p class="card-text m-0"><i class="fab fa-${platformIcon}"></i> ${user.gamer_tag}</p>
+            <p class="card-text m-0"><i class="${(platformIcon == 'gamepad')?'fas':'fab'} fa-${platformIcon}"></i> ${user.gamer_tag}</p>
           </div>
         </div>
       </div>
@@ -164,6 +200,26 @@ wp.HomePageController = class {
 
     return $newcard;
   }
+
+  createUserCard(user, uid){
+    const $newCard = $(`
+      <div class="row">
+        <div class="col-10">
+          <h5>${user.name}</h5>
+        </div>
+        <div class="col-2 text-right">
+          <i id="add-friend" class="fas fa-user-plus accept-friend"></i>
+        </div>
+      </div>
+    `);
+
+    $newCard.find("#add-friend").click(() => {
+      wp.fbSingleUserManager.updateFriendsInfo(uid);
+    });
+
+    return $newCard;
+  }
+
 }
 
 //-----------------------profile page-----------------------------------------------------
@@ -182,7 +238,6 @@ wp.FbSingleUserManager = class {
     this._unsubscribe = this._ref.onSnapshot(doc => {
       if (doc.exists) {
         this._document = doc;
-        console.log("doc.data() :", doc.data());
         if (changeListener) {
           changeListener();
         }
@@ -223,13 +278,6 @@ wp.FbSingleUserManager = class {
     this._ref
       .update({
         [wp.USER_FRIENDS]: firebase.firestore.FieldValue.arrayUnion(uid)
-      });
-  }
-
-  deleteFriendsRequest(uid){
-    this._ref
-      .update({
-        [wp.USER_FRIEND_REQUESTS]: firebase.firestore.FieldValue.arrayRemove(uid)
       });
   }
 
@@ -392,7 +440,6 @@ wp.ProfilePageController = class {
 
     for(let k = 0; k < friendRequests.length; k++){
       wp.fbUsersManger._ref.doc(friendRequests[k]).get().then((docref) =>{
-        console.log(docref.data())
         const $newCard = this.createFriendRequestCard(docref.data(), friendRequests[k])
 
         $newFRList.append($newCard);
@@ -402,7 +449,6 @@ wp.ProfilePageController = class {
 
     for(let k = 0; k < friends.length; k++){
       wp.fbUsersManger._ref.doc(friends[k]).get().then((docref) =>{
-        console.log(docref.data())
         const $newCard = this.createFriendCard(docref.data(), friends[k])
 
         $newFList.append($newCard);
@@ -509,6 +555,7 @@ wp.initializePage = function () {
   if ($("#home-page").length) {
     console.log("On the list page");
     wp.fbUsersManger = new wp.FbUsersManager();
+    wp.fbSingleUserManager = new wp.FbSingleUserManager();
     new wp.HomePageController();
   }
   else if ($("#login-page").length) {

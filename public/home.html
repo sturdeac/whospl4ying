@@ -19,7 +19,8 @@
       </span>
       <div class="dropdown-menu dropdown-menu-right">
         <a href="/profile.html" class="dropdown-item">Profile</a>
-        <button id="menuAddFriend" class="dropdown-item" data-toggle="modal" data-target="#addFriendModal" type="button">Add Friend</button>
+        <button id="menuAddFriend" class="dropdown-item" data-toggle="modal" data-target="#addFriendModal"
+          type="button">Add Friend</button>
         <button id="menuSignOut" class="dropdown-item" type="button">Sign out</button>
       </div>
     </div>
@@ -31,34 +32,31 @@
   </div>
 
   <div class="modal fade" id="addFriendModal" tabindex="-1" role="dialog" aria-labelledby="addFriendModalLabel"
-      aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="addFriendModalLabel">Edit Profile</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-md-12">
-                <div class="form-group row">
-                  <div class="col-sm-12">
-                    <input type="text" id="inputName" class="form-control" placeholder="Search For a Friend" />
-                  </div>
-                </div>
-              </div>
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addFriendModalLabel">Find Friends</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="form-group col-md-12">
+              <input type="text" id="inputSearchName" class="form-control" placeholder="Search For a Friend" />
             </div>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button id="SubmitEditProfile" type="button" class="btn btn-primary" data-dismiss="modal">Save
-              changes</button>
+          <div id="usersContainer" class="row">
+            <div id="usersList" class="col-12"></div>
           </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
+  </div>
 
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/bootstrap.min.js"></script>
